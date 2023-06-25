@@ -243,7 +243,7 @@ namespace FirstMVCApplication.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(string Email, string Password, bool RememberMe)
         {
-            // var result = new SignInManager<Employee>().SignInMana();
+            
            
                 var result = await _signInManager.PasswordSignInAsync(Email, Password, RememberMe, lockoutOnFailure: true);
            
