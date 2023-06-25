@@ -1,11 +1,12 @@
 ﻿using FirstMVCApplication.Data.Enum;
+using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FirstMVCApplication.Models
 {
     [Table("Employee")]
-    public class Employee
+    public class Employee : IdentityUser
     {
         [Key]
         public int EmployeeId { get; set; }

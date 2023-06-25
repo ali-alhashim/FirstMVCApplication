@@ -4,9 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using FirstMVCApplication.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
-    public class ApplicationDbContext : DbContext
-    {
+public class ApplicationDbContext : IdentityDbContext<Employee>
+{
         public ApplicationDbContext (DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
