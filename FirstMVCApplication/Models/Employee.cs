@@ -22,7 +22,8 @@ namespace FirstMVCApplication.Models
         public GenderOptions Gender { get; set; }
 
         [DataType(DataType.Currency)]
-        [Column(TypeName = "decimal(18, 2)")]
+        [DisplayFormat(DataFormatString = "{0:SAR ##,###.##}", ApplyFormatInEditMode = true)]
+        [Column(TypeName = "decimal(20, 2)")]
         public decimal Salary { get; set; }
     }
 }
