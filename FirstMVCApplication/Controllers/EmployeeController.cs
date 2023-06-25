@@ -11,6 +11,7 @@ using FirstMVCApplication.ViewModels;
 
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using System.Security.Cryptography;
+using Microsoft.AspNetCore.Identity;
 
 namespace FirstMVCApplication.Controllers
 {
@@ -231,6 +232,7 @@ namespace FirstMVCApplication.Controllers
         [HttpPost]
         public IActionResult Login(string Email, string Password)
         {
+           // var result = new SignInManager<Employee>().SignInMana();
             return View();
         }
 
