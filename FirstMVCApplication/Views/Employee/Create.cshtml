@@ -1,0 +1,136 @@
+﻿@model FirstMVCApplication.Models.Employee
+
+@using FirstMVCApplication.Data.Enum;
+@{
+    ViewData["Title"] = "Create";
+
+    List<Address> addresses = new List<Address>();
+}
+
+<h1>Create</h1>
+
+<h4>Employee</h4>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+          
+          
+            <div class="form-group">
+                <label asp-for="Gender" class="control-label"></label>
+                <select asp-for="Gender" asp-items="Html.GetEnumSelectList<GenderOptions>()" class="form-select"></select>
+                <span asp-validation-for="Gender" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Salary" class="control-label"></label>
+                <input asp-for="Salary" class="form-control" />
+                <span asp-validation-for="Salary" class="text-danger"></span>
+            </div>
+
+            <hr />
+            <h6> -Address- </h6>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            SN
+                        </th>
+                        <th>
+                            Country
+                        </th>
+                        <th>
+                            City
+                        </th>
+                        <th>
+                            State
+                        </th>
+                        <th>
+                            Pin
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr id="addressRowID_1">
+                        <td>
+                            <input type="text" value="1" name="SN_1" class="form-control" size="3"/>
+                        </td>
+                        <td>
+                            <input type="text" name="Country_1" class="form-control"/>
+                        </td>
+
+                        <td>
+                            <input type="text" name="City_1" class="form-control" />
+                        </td>
+
+                        <td>
+                            <input type="text" name="State_1" class="form-control" />
+                        </td>
+
+                        <td>
+                            <input type="text" name="Pin_1" class="form-control" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <a class="btn btn-outline-success" onclick="AddAddressRow();">Add Address</a>
+            <input type="hidden" name="TotalAddress" value="1" id="TotalAddress"/>
+
+            <hr />
+            <div class="form-group my-2">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+<script>
+    var i = 1;
+    var x = 0;
+
+    function AddAddressRow()
+    {
+        i++;
+        x = i -1;
+        $("#addressRowID_"+x).after("<tr id='addressRowID_"+i+"'>"+
+
+            "<td>" +
+            "<input type='text' name='SN_" + i + "' class='form-control' value='"+i+"' size='3'>" +
+            "</td>" +
+                                      "<td>"+
+                                              "<input type='text' name='Country_" + i + "' class='form-control' >" +
+                                      "</td>"+
+            "<td>" +
+            "<input type='text' name='City_" + i + "' class='form-control'" +
+            "</td>" +
+
+            "<td>" +
+            "<input type='text' name='State_" + i + "' class='form-control'" +
+            "</td>" +
+
+            "<td>" +
+            "<input type='text' name='Pin_" + i + "' class='form-control'" +
+            "</td>" +
+                                      "</tr>");
+
+        document.getElementById("TotalAddress").value = i;
+    }
+</script>
