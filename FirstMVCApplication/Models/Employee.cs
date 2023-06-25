@@ -8,14 +8,16 @@ namespace FirstMVCApplication.Models
     [Table("Employee")]
     public class Employee : IdentityUser
     {
-        [Key]
-        public int EmployeeId { get; set; }
+       
 
         public string Name { get; set; }
 
-        public string? Email { get; set; }
+        public string? Email { get; set; } //from IdentityUser
 
-        //public int AddressId { get; set; }
+        public string UserName { get; set; } //from IdentityUser 
+
+        [ForeignKey(nameof(AddressId))]
+        public int AddressId { get; set; }
         public ICollection<Address>? Address { get; set; }
 
       

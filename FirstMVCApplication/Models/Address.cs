@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 
 namespace FirstMVCApplication.Models
@@ -9,7 +10,8 @@ namespace FirstMVCApplication.Models
         public int AddressId { get; set; }
 
 
-        public int EmployeeId { get; set; }
+        
+        public string EmployeeId { get; set; }
         public Employee Employee { get; set; }
 
         public string Country { get; set; }

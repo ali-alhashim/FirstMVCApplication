@@ -9,6 +9,9 @@ using FirstMVCApplication.Models;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using FirstMVCApplication.ViewModels;
 
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using System.Security.Cryptography;
+
 namespace FirstMVCApplication.Controllers
 {
     public class EmployeeController : Controller
@@ -29,7 +32,7 @@ namespace FirstMVCApplication.Controllers
         }
 
         // GET: Employee/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(string? id)
         {
             if (id == null || _context.Employee == null)
             {
@@ -37,7 +40,7 @@ namespace FirstMVCApplication.Controllers
             }
 
             var employee = await _context.Employee
-                .FirstOrDefaultAsync(m => m.EmployeeId == id);
+                .FirstOrDefaultAsync(m => m.Id == id.ToString());
 
             var Addresses =  _context.Address.Where(m => m.EmployeeId == id).ToList();
 
@@ -66,10 +69,35 @@ namespace FirstMVCApplication.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Name,Email,Gender,Salary")] Employee employee)
         {
-            if (ModelState.IsValid)
-            {
-                _context.Add(employee);
-                await _context.SaveChangesAsync();
+          
+                employee.UserName = employee.Email;
+
+                byte[] salt = RandomNumberGenerator.GetBytes(128 / 8);
+                Convert.ToBase64String(salt);
+                string hashedPassword = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+                password: HttpContext.Request.Form["Password"],
+                salt: salt,
+                prf: KeyDerivationPrf.HMACSHA256,
+                iterationCount: 100000,
+                numBytesRequested: 256 / 8));
+
+                employee.EmailConfirmed = true;
+                employee.NormalizedUserName = employee.UserName.ToLower();
+                employee.NormalizedEmail = employee.Email.ToLower();
+
+                employee.PasswordHash = hashedPassword;
+
+                try
+                {
+                    _context.Add(employee);
+                    await _context.SaveChangesAsync();
+                }
+                catch(Exception ex) {
+                    Console.WriteLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+                    Console.WriteLine(ex.ToString()); 
+                    
+                }
+              
 
                 // add many address to the Employee
 
@@ -94,7 +122,8 @@ namespace FirstMVCApplication.Controllers
                 }
 
                 return RedirectToAction(nameof(Index));
-            }
+            
+           
             return View(employee);
         }
 
@@ -121,7 +150,7 @@ namespace FirstMVCApplication.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("EmployeeId,Name,Email,Gender,Salary")] Employee employee)
         {
-            if (id != employee.EmployeeId)
+            if (id.ToString() != employee.Id)
             {
                 return NotFound();
             }
@@ -135,7 +164,7 @@ namespace FirstMVCApplication.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!EmployeeExists(employee.EmployeeId))
+                    if (employee.Id == null)
                     {
                         return NotFound();
                     }
@@ -158,7 +187,7 @@ namespace FirstMVCApplication.Controllers
             }
 
             var employee = await _context.Employee
-                .FirstOrDefaultAsync(m => m.EmployeeId == id);
+                .FirstOrDefaultAsync(m => m.Id == id.ToString());
             if (employee == null)
             {
                 return NotFound();
@@ -188,7 +217,24 @@ namespace FirstMVCApplication.Controllers
 
         private bool EmployeeExists(int id)
         {
-          return (_context.Employee?.Any(e => e.EmployeeId == id)).GetValueOrDefault();
+          return (_context.Employee?.Any(e => e.Id == id.ToString())).GetValueOrDefault();
         }
+
+
+
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+
+        [HttpPost]
+        public IActionResult Login(string Email, string Password)
+        {
+            return View();
+        }
+
+
+
     }
 }
