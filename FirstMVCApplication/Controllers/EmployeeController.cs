@@ -77,23 +77,23 @@ namespace FirstMVCApplication.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Name,Email,Gender,Salary")] Employee employee)
         {
-          
-                employee.UserName = employee.Email;
+                 var hasher = new PasswordHasher<Employee>();
+                 employee.UserName = employee.Email;
 
-                byte[] salt = RandomNumberGenerator.GetBytes(128 / 8);
-                Convert.ToBase64String(salt);
-                string hashedPassword = Convert.ToBase64String(KeyDerivation.Pbkdf2(
-                password: HttpContext.Request.Form["Password"],
-                salt: salt,
-                prf: KeyDerivationPrf.HMACSHA256,
-                iterationCount: 100000,
-                numBytesRequested: 256 / 8));
+                //byte[] salt = RandomNumberGenerator.GetBytes(128 / 8);
+                //Convert.ToBase64String(salt);
+                //string hashedPassword = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+                //password: HttpContext.Request.Form["Password"],
+                //salt: salt,
+                //prf: KeyDerivationPrf.HMACSHA256,
+                //iterationCount: 100000,
+                //numBytesRequested: 256 / 8));
 
-                employee.EmailConfirmed = true;
-                employee.NormalizedUserName = employee.UserName.ToLower();
-                employee.NormalizedEmail = employee.Email.ToLower();
+                employee.EmailConfirmed      = true;
+                employee.NormalizedUserName = employee.UserName.ToUpper();
+                employee.NormalizedEmail    = employee.Email.ToUpper();
 
-                employee.PasswordHash = hashedPassword;
+                employee.PasswordHash       = hasher.HashPassword(null, HttpContext.Request.Form["Password"]);
 
                 try
                 {
