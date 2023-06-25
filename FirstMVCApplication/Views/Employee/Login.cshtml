@@ -1,9 +1,12 @@
 ﻿
 
 <h4>Login Employee</h4>
-
+<span class="alert-danger">
+@ViewData["LoginResult"];
+</span>
 <form asp-action="Login" asp-controller="Employee">
-    <input type="email" name="Email" class="form-control" />
+    <input type="text" name="Email" class="form-control" />
     <input type="password" name="Password" class="form-control"/>
+    <input type="checkbox" name="RememberMe" class="form-check" />
     <input type="submit" class="btn btn-outline-primary" value="Login" />
 </form>

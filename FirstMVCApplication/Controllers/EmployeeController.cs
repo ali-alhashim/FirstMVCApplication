@@ -18,10 +18,11 @@ namespace FirstMVCApplication.Controllers
     public class EmployeeController : Controller
     {
         private readonly ApplicationDbContext _context;
-
-        public EmployeeController(ApplicationDbContext context)
+        private readonly SignInManager<Employee> _signInManager;
+        public EmployeeController(ApplicationDbContext context, SignInManager<Employee> signInManager)
         {
             _context = context;
+            _signInManager = signInManager;
         }
 
         // GET: Employee
@@ -57,11 +58,17 @@ namespace FirstMVCApplication.Controllers
             return View(viewModelEmployeeAddress);
         }
 
+
+
+
         // GET: Employee/Create
         public IActionResult Create()
         {
             return View();
         }
+
+
+
 
         // POST: Employee/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -128,8 +135,12 @@ namespace FirstMVCApplication.Controllers
             return View(employee);
         }
 
+
+
+
+
         // GET: Employee/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(string? id)
         {
             if (id == null || _context.Employee == null)
             {
@@ -149,9 +160,9 @@ namespace FirstMVCApplication.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("EmployeeId,Name,Email,Gender,Salary")] Employee employee)
+        public async Task<IActionResult> Edit(string id, [Bind("EmployeeId,Name,Email,Gender,Salary")] Employee employee)
         {
-            if (id.ToString() != employee.Id)
+            if (id != employee.Id)
             {
                 return NotFound();
             }
@@ -180,7 +191,7 @@ namespace FirstMVCApplication.Controllers
         }
 
         // GET: Employee/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(string? id)
         {
             if (id == null || _context.Employee == null)
             {
@@ -188,7 +199,7 @@ namespace FirstMVCApplication.Controllers
             }
 
             var employee = await _context.Employee
-                .FirstOrDefaultAsync(m => m.Id == id.ToString());
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (employee == null)
             {
                 return NotFound();
@@ -200,7 +211,7 @@ namespace FirstMVCApplication.Controllers
         // POST: Employee/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(string id)
         {
             if (_context.Employee == null)
             {
@@ -230,10 +241,24 @@ namespace FirstMVCApplication.Controllers
 
 
         [HttpPost]
-        public IActionResult Login(string Email, string Password)
+        public async Task<IActionResult> Login(string Email, string Password, bool RememberMe)
         {
-           // var result = new SignInManager<Employee>().SignInMana();
-            return View();
+            // var result = new SignInManager<Employee>().SignInMana();
+           
+                var result = await _signInManager.PasswordSignInAsync(Email, Password, RememberMe, lockoutOnFailure: true);
+           
+            if (result.Succeeded)
+            {
+                Console.WriteLine($"Welcome {Email}");
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                ViewData["LoginResult"] = "Invalid login attempt.";
+                return View();
+            }
+
+           
         }
 
 
